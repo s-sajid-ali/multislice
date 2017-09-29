@@ -6,7 +6,9 @@ Created on Mon Jul 24 11:38:01 2017
 """
 
 import numpy as np
+from numpy.fft import fftfreq
 import numpy.fft as fft
+from pyfftw.interfaces.numpy_fft import fftshift, fft2, ifft2
 
 '''
 Propogation using the Transfer function method. Note that fftfreq has been used from the numpy.fft library. Using this means that we no longer perform an fftshift after transforming u1 to frequency domain.
@@ -22,8 +24,8 @@ u2 is the beam profile at the output plane
 def propTF(u1,step,L,wavel,z) :
     M,N = np.shape(u1)
     #k = 2*np.pi/wavel
-    fx = fft.fftfreq(M,d=step)
-    fy = fft.fftfreq(N,d=step)
+    fx = fftfreq(M,d=step)
+    fy = fftfreq(N,d=step)
     FX,FY = np.meshgrid((fx),(fy))
     FX = fft.fftshift(FX)
     FY = fft.fftshift(FY)
@@ -55,7 +57,7 @@ def propFF(u1,step,L1,wavel,z):
     k = 2*np.pi/wavel
     L2 = wavel*z/step
     step2 = wavel*z/L1
-    n = L2/step2 #number of samples
+    n = np.shape(u1)[0] #number of samples
     x2 = np.linspace(-L2/2.0,L2/2.0,n)
     X2,Y2 = np.meshgrid(x2,x2)
     c = 1/(1j*wavel*z)*np.exp(((1j*k)/(2.*z))*(X2**2+Y2**2))

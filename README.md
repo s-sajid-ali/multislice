@@ -1,7 +1,7 @@
-# multislice
+## multislice
 
-Create a class to store a grid of delta and beta values (of the x-ray refractive index) and carry out multislice propogation.
+Codes for multislice propogation
 
-Output the final wavefront and wavefront at intermediate stages if specifed.
-
-Output shown is performed on the grid taken from https://github.com/mdw771/xdesign/blob/master/tests/test_tube_particles.py
+*fft_utils.py*    - pyfftw wrapper
+*prop.py*  - propogation routines
+*prop_utils.py*- utilities for multilsice propogation <br>

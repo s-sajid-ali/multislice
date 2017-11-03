@@ -10,8 +10,10 @@ pyfftw builder interface is used to access the FFTW class and is optimized with 
 
 '''
 def FFT2(a,threads = 6):
-    fft2 = pyfftw.builders.fft2(a,overwrite_input=True, threads=threads)
+    fft2 = pyfftw.FFTW(a,a, axes=(0,1), direction='FFTW_FORWARD', flags=('FFTW_MEASURE', ), 
+                         threads=6, planning_timelimit=None
     return fft2()
 def IFFT2(a,threads = 6):
-    ifft2 = pyfftw.builders.ifft2(a,overwrite_input=True, threads=threads)
+    ifft2 = pyfftw.FFTW(a,a, axes=(0,1), direction='FFTW_BACKWARD', flags=('FFTW_MEASURE', ), 
+                         threads=6, planning_timelimit=None
     return ifft2()

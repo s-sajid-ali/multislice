@@ -1,4 +1,5 @@
 import pyfftw
+import numpy as np
 
 pyfftw.import_wisdom(pyfftw.export_wisdom())
 
@@ -10,10 +11,23 @@ pyfftw builder interface is used to access the FFTW class and is optimized with 
 
 '''
 def FFT2(a,threads = 6):
-    fft2 = pyfftw.FFTW(a,a, axes=(0,1), direction='FFTW_FORWARD', flags=('FFTW_MEASURE', ), 
+    A = pyfftw.empty_aligned((np.shape(a)),dtype='complex128',n=32)
+    
+    fft2_ = pyfftw.FFTW(A,A, axes=(0,1), direction='FFTW_FORWARD', flags=('FFTW_MEASURE', ), 
                          threads=threads, planning_timelimit=None)
-    return fft2()
+    np.copyto(A,a)
+    fft2_()
+    np.copyto(a,A)
+    del(A)
+    return None
 def IFFT2(a,threads = 6):
-    ifft2 = pyfftw.FFTW(a,a, axes=(0,1), direction='FFTW_BACKWARD', flags=('FFTW_MEASURE', ), 
+    A = pyfftw.empty_aligned((np.shape(a)),dtype='complex128',n=32)
+    
+    ifft2_ = pyfftw.FFTW(A,A, axes=(0,1), direction='FFTW_BACKWARD', flags=('FFTW_MEASURE', ), 
                          threads=threads, planning_timelimit=None)
-    return ifft2()
+    ifft2_.__call__(normalise_idft='False')
+    np.copyto(A,a)
+    ifft2_()
+    np.copyto(a,A)
+    del(A)
+    return None

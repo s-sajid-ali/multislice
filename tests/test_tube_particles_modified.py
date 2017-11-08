@@ -85,7 +85,7 @@ def test_model_prop_pipeline():
     t0 = time.time()
     wavefront = sim.multislice_propagate()
     print('Propagation time: {} ms'.format((time.time() - t0) * 1000))
-    io.imsave('ming_output.tiff',img_as_float(abs(wavefront)))
+    np.save('ming_output.npy',abs(wavefront))
     
 
 

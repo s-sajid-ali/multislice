@@ -143,6 +143,7 @@ def propogate_through_object(wavefront_input,
     step_z = thickness/number_of_steps
     p = decide(step_z,step_xy,L,wavel)
     print('Fresnel Number :',((L**2)/(wavel*step_z)))
+    time.sleep(1) 
     if mode == 'parallel':
         for i in range(number_of_steps):    
             wavefront = modify(wavefront,delta_slice,beta_slice,step_z,wavel)

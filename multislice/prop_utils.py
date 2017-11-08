@@ -21,12 +21,17 @@ def decide(step_z,step_xy,L,wavel):
     dist = step_z
     sampling = step_xy
     critical = wavel*dist/L
-    if sampling > critical :
-        p = prop.propTF
-        print('propogator to be used : TF')
+    if ((L**2)/(wavel*step_z)) > 0.1 :
+        
+        if sampling > critical :
+            p = prop.propTF
+            print('propogator to be used : TF')
+        else :
+            p = prop.propIR
+            print('propogator to be used : IR')
     else :
-        p = prop.propIR
-        print('propogator to be used : IR')
+        p = prop.FF
+        print('propogator to be used : FF')
     return p   
 '''
 modify : wavefront is modified according to the material present
@@ -112,15 +117,9 @@ Inputs  : wavefront - input wave, zp_delta,zp_beta - zone plate, zp_thickness - 
 Outputs : wavefront - output wave
 '''
 def propogate_through_object(wavefront_input,
-                             delta_slice,
-                             beta_slice,
-                             thickness,
-                             step_xy,
-                             wavel,
-                             L,
-                             number_of_steps,
-                             d1,d2,
-                             **kwargs):
+                             delta_slice,beta_slice,
+                             thickness,step_xy,wavel,L,
+                             number_of_steps,d1,d2,**kwargs):
     
     wavefront = np.copy(wavefront_input)
     xray_object = str('place_holder_object')
@@ -136,14 +135,14 @@ def propogate_through_object(wavefront_input,
         print('Free space propogation before '+str(xray_object)+'...')
         step_z = d1
         p = decide(step_z,step_xy,L,wavel)
-        print('Fresnel Number :',((L**2*1e-12)/(wavel*step_z)))
+        print('Fresnel Number :',((L**2)/(wavel*step_z)))
         wavefront  = p(wavefront,step_xy,L,wavel,step_z)
     
     
     #through object
     step_z = thickness/number_of_steps
     p = decide(step_z,step_xy,L,wavel)
-    time.sleep(1)
+    print('Fresnel Number :',((L**2)/(wavel*step_z)))
     if mode == 'parallel':
         for i in range(number_of_steps):    
             wavefront = modify(wavefront,delta_slice,beta_slice,step_z,wavel)
@@ -158,7 +157,7 @@ def propogate_through_object(wavefront_input,
         step_z = d2
         print('Free space propogation after '+str(xray_object)+'...')
         p = decide(step_z,step_xy,L,wavel)
-        print('Fresnel Number :',((L**2*1e-12)/(wavel*step_z)))
+        print('Fresnel Number :',((L**2)/(wavel*step_z)))
         wavefront  = p(wavefront,step_xy,L,wavel,step_z)
     
     wavefront_out = np.copy(wavefront)

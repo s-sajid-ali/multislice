@@ -63,38 +63,46 @@ plot_2d_complex : function used to plot complex 2d array
 Inputs  : input_array - input array to be plotted, name - name of the variable being plotted, mode - used to specify linear or log plot , coords - used to plot the boundaries(as **kwargs)
 Outputs : plots of magnitude and phase!
 '''
-
-def plot_2d_complex(input_array,mode='linear',name='input_array',**kwargs):
+def plot_2d_complex(input_array,mode='linear',name='input_array',*args,**kwargs):
     fig, (ax1,ax2) = plt.subplots(1,2)
     if 'coords' in kwargs:
         if mode == 'linear' : 
             im1 = ax1.imshow((np.abs(input_array)),extent = kwargs['coords'])
         if mode == 'log' :
             im1 = ax1.imshow(np.log((np.abs(input_array))),extent = kwargs['coords'])
+        ax1.title.set_text('magnitude of '+str(name)+'( in '+str(mode)+' scale)')
+        ax1.title.set_y(1.08)
         fig.colorbar(im1,ax = ax1)
-        ax1.set_xlabel('axes in um')
+        scaling = np.round(np.log10(np.abs(kwargs['coords'][0])))
+        scaling = np.int(scaling)
+        ax1.set_xlabel('axes in 10^('+str(scaling)+')')
         im2 = ax2.imshow(unwrap_phase(np.angle(input_array)),extent = kwargs['coords'])
+        ax2.title.set_text('phase of '+str(name))
+        ax2.title.set_y(1.08)
         fig.subplots_adjust(right=1.75)
-        ax2.set_xlabel('axes in um')
+        ax2.set_xlabel('axes in 10^('+str(scaling)+')')
         fig.colorbar(im2,ax = ax2)
     else :
         if mode == 'linear' : 
             im1 = ax1.imshow((np.abs(input_array)))
         if mode == 'log' :
-            im1 = ax1.imshow(np.log((np.abs(input_array))))
+            im1 = ax1.imshow(np.log((np.abs(input_array)))) 
+        ax1.title.set_text('magnitude  of '+str(name)+'( in '+str(mode)+' scale)')
+        ax1.title.set_y(1.08)
         fig.colorbar(im1,ax = ax1)
-        ax1.set_xlabel('axes in um')
+        ax1.set_xlabel('axes in 10^('+str(scaling)+')')
         im2 = ax2.imshow(unwrap_phase(np.angle(input_array)))
+        ax2.title.set_text('phase of '+str(name))
+        ax2.title.set_y(1.08)
+        ax2.set_xlabel('axes in 10^('+str(scaling)+')')
         fig.subplots_adjust(right=1.75)
-        ax2.set_xlabel('axes in um')
         fig.colorbar(im2,ax = ax2) 
     plt.show()
-    print('magnitude(in '+str(mode)+' scale)(left) and phase(right) of the '+str(name)+': ')
-    print('maximum value of '+str(name)+': ',np.max(abs(input_array)))
-    print('minimum value of '+str(name)+': ',np.min(abs(input_array)))
-    print('location of maxima in '+str(name)+': ',np.where(abs(input_array)==np.max(abs(input_array))))
-    
-    
+    if 'print_max' in args :
+        print('maximum value of '+str(name)+': ',np.max(abs(input_array)))
+        print('minimum value of '+str(name)+': ',np.min(abs(input_array)))
+        print('location of maxima in '+str(name)+': ',np.where(abs(input_array)==np.max(abs(input_array))))
+
 '''
 number_of_steps : calculate number of steps required for propogation along direction of beam
 

@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='multislice',
-      version='1.1.dev',
+      version='1.0.dev',
       description='zone plate testing',
       url='https://github.com/sajid-ali-nu/multislice/',
       author='Sajid',

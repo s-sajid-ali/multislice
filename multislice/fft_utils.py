@@ -14,7 +14,7 @@ pyfftw builder interface is used to access the FFTW class and is optimized with 
 def FFT2(a,threads = 6):
     A = pyfftw.empty_aligned((np.shape(a)),dtype='complex128',n=32)
     
-    fft2_ = pyfftw.FFTW(A,A, axes=(0,1), direction='FFTW_FORWARD', flags=('FFTW_WISDOM_ONLY','FFTW_MEASURE', ), 
+    fft2_ = pyfftw.FFTW(A,A, axes=(0,1), direction='FFTW_FORWARD', flags=('FFTW_MEASURE', ), 
                          threads=threads, planning_timelimit=None)
     np.copyto(A,a)
     fft2_()
@@ -24,7 +24,7 @@ def FFT2(a,threads = 6):
 def IFFT2(a,threads = 6):
     A = pyfftw.empty_aligned((np.shape(a)),dtype='complex128',n=32)
     
-    ifft2_ = pyfftw.FFTW(A,A, axes=(0,1), direction='FFTW_BACKWARD', flags=('FFTW_WISDOM_ONLY','FFTW_MEASURE', ), 
+    ifft2_ = pyfftw.FFTW(A,A, axes=(0,1), direction='FFTW_BACKWARD', flags=('FFTW_MEASURE', ), 
                          threads=threads, planning_timelimit=None)
     ifft2_.__call__(normalise_idft='False')
     np.copyto(A,a)

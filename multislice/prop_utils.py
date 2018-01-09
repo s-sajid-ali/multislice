@@ -27,8 +27,8 @@ def decide(step_z,step_xy,L,wavel):
             p = prop.propTF
             print('propogator to be used : TF')
         else :
-            p = prop.propIR
-            print('propogator to be used : IR')
+            p = prop.prop1FT
+            print('propogator to be used : 1FT')
     else :
         p = prop.FF
         print('propogator to be used : FF')

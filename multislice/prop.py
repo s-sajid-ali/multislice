@@ -93,26 +93,40 @@ def propFF(u,step,L1,wavel,z):
     
     return u,L_out
 
+
+'''
+Propogation using the Single Fourier Transform approach. Input convention as above.
+'''
+
 def prop1FT(u,step,L1,wavel,z):
     M,N = np.shape(u)
     k = 2*np.pi/wavel
     x = np.linspace(-L1/2.0,L1/2.0-step,M)
     y = np.linspace(-L1/2.0,L1/2.0-step,N)
+    
+    fx = np.fft.fftfreq(M,d=step)
+    fy = np.fft.fftfreq(N,d=step)
+    fx = pyfftw.interfaces.numpy_fft.fftshift(fx)
+    fy = pyfftw.interfaces.numpy_fft.fftshift(fy)
+    FX,FY = np.meshgrid((fx),(fy))
+    
+    
     X,Y = np.meshgrid(x,y)
     L_out = wavel*z/step
     step2 = wavel*z/L1
     n = M #number of samples
     x2 = np.linspace(-L_out/2.0,L_out/2.0,n)
     X2,Y2 = np.meshgrid(x2,x2)
-
-    c = ne.evaluate('exp(1j*k*(1/(2*z))*(X2**2+Y2**2))')*(1/(1j*wavel*z))
-    c0 = ne.evaluate('exp((1j*k)/(2*z)*(X**2 + Y**2))')
+    pi = np.pi
+    c0  = ne.evaluate('exp((-1j*2*pi/wavel)*sqrt(X**2+Y**2+z**2))')
+    c   = ne.evaluate('exp((-1j*2*pi/wavel)*sqrt(X2**2+Y2**2+z**2))')
+    #c = np.exp((-1j*z*2*np.pi/wavel)*np.sqrt(1+wavel**2*(FX**2+FY**2))) Kenan's approach!
     
     u = ne.evaluate('c0*u')
-    u = pyfftw.interfaces.numpy_fft.fftshift(u)    
     FFT2(u)
-    u = pyfftw.interfaces.numpy_fft.ifftshift(u)
-    u = ne.evaluate('c*u')    
-    u *= step*step
+    u = np.fft.fftshift(u)
+    u = ne.evaluate('c*u')
+    u = ne.evaluate('u*(1j/(wavel*z))')
+    u = u*step*step
     
     return u,L_out

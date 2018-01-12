@@ -25,10 +25,10 @@ def decide(step_z,step_xy,L,wavel):
         
         if sampling > critical :
             p = prop.propTF
-            print('propogator to be used : TF')
+            print('propogator to be used : Transfer Function')
         else :
             p = prop.prop1FT
-            print('propogator to be used : 1FT')
+            print('propogator to be used : Single Fourier Transform')
     else :
         p = prop.FF
         print('propogator to be used : FF')

@@ -15,9 +15,9 @@ contains functions propTF, propIR, propFF, prop1FT
 '''
 
 __all__ = ['propTF',
-           'propIR',
            'propFF',
-           'prop1FT']
+           'prop1FT',
+           'propIR']
 
 
 '''
@@ -40,7 +40,8 @@ def propTF(u,step,L,wavel,z) :
     FX = pyfftw.interfaces.numpy_fft.fftshift(FX)
     FY = pyfftw.interfaces.numpy_fft.fftshift(FY)
     
-    H = ne.evaluate('exp(-1j*pi*wavel*z*(FX**2+FY**2))')
+    H = ne.evaluate('(-1j*(2*pi*z/wavel)*sqrt(1-wavel**2*(FX**2+FY**2)))')
+
     FFT2(u)
     u = np.fft.fftshift(u)
     u = ne.evaluate('H*u')
@@ -48,56 +49,10 @@ def propTF(u,step,L,wavel,z) :
     IFFT2(u)
     
     return u
-'''
-Propogation using the Impulse Response function. The convention of shiftinng a function in realspace before performing the fourier transform which is used in the reference is followed here. Input convention as above
-'''
-def propIR(u,step,L,wavel,z):
-    M,N = np.shape(u)
-    k = 2*np.pi/wavel
-    x = np.linspace(-L/2.0,L/2.0-step,M)
-    y = np.linspace(-L/2.0,L/2.0-step,N)
-    X,Y = np.meshgrid(x,y)
-    
-    h = ne.evaluate('(exp(1j*k*z)/(1j*wavel*z))*exp(1j*k*(1/(2*z))*(X**2+Y**2))')
-    h_in = pyfftw.empty_aligned((np.shape(h)))
-    h = pyfftw.interfaces.numpy_fft.fftshift(h)
-    h_in = h
-    FFT2(h)
-    H = h*step*step
-    
-    u = pyfftw.interfaces.numpy_fft.fftshift(u)
-    FFT2(u)
-    u = ne.evaluate('H * u')
-    IFFT2(u)
-    u = pyfftw.interfaces.numpy_fft.ifftshift(u)
-    
-    return u
-'''
-Fraunhofer propogation. Note that we now output two variables since the side length of the observation plane is no longer the same as the side length of the input plane.
-'''
-def propFF(u,step,L1,wavel,z):
-    M,N = np.shape(u)
-    k = 2*np.pi/wavel
-    L_out = wavel*z/step
-    step2 = wavel*z/L1
-    n = M #number of samples
-    x2 = np.linspace(-L_out/2.0,L_out/2.0,n)
-    X2,Y2 = np.meshgrid(x2,x2) 
-    c =ne.evaluate('exp((1j*k*(1/(2*z)))*(X2**2+Y2**2))')*(1/(1j*wavel*z))
-    u = pyfftw.interfaces.numpy_fft.fftshift(u)
-    
-    FFT2(u)    
-    u = pyfftw.interfaces.numpy_fft.ifftshift(u)
-    u = ne.evaluate('c*u')
-    u *= step*step
-    
-    return u,L_out
-
 
 '''
 Propogation using the Single Fourier Transform approach. Input convention as above.
 '''
-
 def prop1FT(u,step,L1,wavel,z):
     M,N = np.shape(u)
     k = 2*np.pi/wavel
@@ -130,3 +85,49 @@ def prop1FT(u,step,L1,wavel,z):
     u = u*step*step
     
     return u,L_out
+
+'''
+Fraunhofer propogation. Note that we now output two variables since the side length of the observation plane is no longer the same as the side length of the input plane.
+'''
+def propFF(u,step,L1,wavel,z):
+    M,N = np.shape(u)
+    k = 2*np.pi/wavel
+    L_out = wavel*z/step
+    step2 = wavel*z/L1
+    n = M #number of samples
+    x2 = np.linspace(-L_out/2.0,L_out/2.0,n)
+    X2,Y2 = np.meshgrid(x2,x2) 
+    c =ne.evaluate('exp((1j*k*(1/(2*z)))*(X2**2+Y2**2))')*(1/(1j*wavel*z))
+    u = pyfftw.interfaces.numpy_fft.fftshift(u)
+    
+    FFT2(u)    
+    u = pyfftw.interfaces.numpy_fft.ifftshift(u)
+    u = ne.evaluate('c*u')
+    u *= step*step
+    
+    return u,L_out
+
+'''
+Propogation using the Impulse Response function. The convention of shiftinng a function in realspace before performing the fourier transform which is used in the reference is followed here. Input convention as above. Use is deprecated since the implementation of 1FT for ranges that are too large for TF but too small for FF. 
+'''
+def propIR(u,step,L,wavel,z):
+    M,N = np.shape(u)
+    k = 2*np.pi/wavel
+    x = np.linspace(-L/2.0,L/2.0-step,M)
+    y = np.linspace(-L/2.0,L/2.0-step,N)
+    X,Y = np.meshgrid(x,y)
+    
+    h = ne.evaluate('(exp(1j*k*z)/(1j*wavel*z))*exp(1j*k*(1/(2*z))*(X**2+Y**2))')
+    h_in = pyfftw.empty_aligned((np.shape(h)))
+    h = pyfftw.interfaces.numpy_fft.fftshift(h)
+    h_in = h
+    FFT2(h)
+    H = h*step*step
+    
+    u = pyfftw.interfaces.numpy_fft.fftshift(u)
+    FFT2(u)
+    u = ne.evaluate('H * u')
+    IFFT2(u)
+    u = pyfftw.interfaces.numpy_fft.ifftshift(u)
+    
+    return u

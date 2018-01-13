@@ -11,12 +11,14 @@ import pyfftw
 from multislice.fft_utils import FFT2,IFFT2
 
 '''
-contains functions propTF, propIR, propFF, prop1FT
+contains functions propTF, propFF, prop1FT, propIR
+
+Review : Approximate propogators if possible !
 '''
 
 __all__ = ['propTF',
-           'propFF',
            'prop1FT',
+           'propFF',
            'propIR']
 
 
@@ -50,8 +52,10 @@ def propTF(u,step,L,wavel,z) :
     
     return u
 
+
+
 '''
-Propogation using the Single Fourier Transform approach. Input convention as above.
+Propogation using the Single Fourier Transform approach. Input convention as above. Note the extra output. 
 '''
 def prop1FT(u,step,L1,wavel,z):
     M,N = np.shape(u)
@@ -69,9 +73,9 @@ def prop1FT(u,step,L1,wavel,z):
     X,Y = np.meshgrid(x,y)
     L_out = wavel*z/step
     step2 = wavel*z/L1
-    n = M #number of samples
-    x2 = np.linspace(-L_out/2.0,L_out/2.0,n)
-    X2,Y2 = np.meshgrid(x2,x2)
+    x2 = np.linspace(-L_out/2.0,L_out/2.0,M)
+    y2 = np.linspace(-L_out/2.0,L_out/2.0,N)
+    X2,Y2 = np.meshgrid(x2,y2)
     pi = np.pi
     c0  = ne.evaluate('exp((-1j*2*pi/wavel)*sqrt(X**2+Y**2+z**2))')
     c   = ne.evaluate('exp((-1j*2*pi/wavel)*sqrt(X2**2+Y2**2+z**2))')
@@ -86,6 +90,8 @@ def prop1FT(u,step,L1,wavel,z):
     
     return u,L_out
 
+
+
 '''
 Fraunhofer propogation. Note that we now output two variables since the side length of the observation plane is no longer the same as the side length of the input plane.
 '''
@@ -95,8 +101,9 @@ def propFF(u,step,L1,wavel,z):
     L_out = wavel*z/step
     step2 = wavel*z/L1
     n = M #number of samples
-    x2 = np.linspace(-L_out/2.0,L_out/2.0,n)
-    X2,Y2 = np.meshgrid(x2,x2) 
+    x2 = np.linspace(-L_out/2.0,L_out/2.0,M)
+    y2 = np.linspace(-L_out/2.0,L_out/2.0,N)
+    X2,Y2 = np.meshgrid(x2,y2) 
     c =ne.evaluate('exp((1j*k*(1/(2*z)))*(X2**2+Y2**2))')*(1/(1j*wavel*z))
     u = pyfftw.interfaces.numpy_fft.fftshift(u)
     
@@ -107,7 +114,10 @@ def propFF(u,step,L1,wavel,z):
     
     return u,L_out
 
+
+
 '''
+Warning : use is now Deprecated !
 Propogation using the Impulse Response function. The convention of shiftinng a function in realspace before performing the fourier transform which is used in the reference is followed here. Input convention as above. Use is deprecated since the implementation of 1FT for ranges that are too large for TF but too small for FF. 
 '''
 def propIR(u,step,L,wavel,z):

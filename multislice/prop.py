@@ -32,8 +32,10 @@ wavel is the wavelength of the light
 z is the propogation distance
 
 u2 is the beam profile at the output plane
+L is the side length of the support at the output plane.
 '''
-def propTF(u,step,L,wavel,z) :
+
+def propTF(u,step,L1,wavel,z) :
     M,N = np.shape(u)
     pi = np.pi
     fx = np.fft.fftfreq(M,d=step)
@@ -42,17 +44,16 @@ def propTF(u,step,L,wavel,z) :
     FX = pyfftw.interfaces.numpy_fft.fftshift(FX)
     FY = pyfftw.interfaces.numpy_fft.fftshift(FY)
     
-    H = ne.evaluate('(-1j*(2*pi*z/wavel)*sqrt(1-wavel**2*(FX**2+FY**2)))')
+    H = ne.evaluate('exp(-1j*(2*pi*z/wavel)*sqrt(1-wavel**2*(FX**2+FY**2)))')
 
     FFT2(u)
     u = np.fft.fftshift(u)
     u = ne.evaluate('H*u')
     u = np.fft.ifftshift(u)
+    
     IFFT2(u)
     
-    return u
-
-
+    return u,L1
 
 '''
 Propogation using the Single Fourier Transform approach. Input convention as above. Note the extra output. 

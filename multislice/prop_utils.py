@@ -72,10 +72,8 @@ def modify_two_materials_case_1(wavefront,step_z,wavel,frac_1,frac_2,pattern_1,d
     dist = step_z
     kz_1 = 2 * np.pi * dist * frac_1 /wavel
     kz_2 = 2 * np.pi * dist * frac_2 /wavel
-    beta_slice = zp_beta
-    delta_slice = zp_delta
-    modulation_1 = mat_1*np.exp((kz_1 * delta_1) * 1j) * np.exp(-kz_1 *beta_1)
-    modulation_2 = mat_2*np.exp((kz_2 * delta_2) * 1j) * np.exp(-kz_2 *beta_2)
+    modulation_1 = pattern_1*np.exp((kz_1 * delta_1)*1j -kz_1*beta_1)
+    modulation_2 = pattern_2*np.exp((kz_2 * delta_2)*1j -kz_2*beta_2)
     wavefront = wavefront * ( modulation_1 * modulation_2 )
     return wavefront
 
@@ -92,10 +90,8 @@ Outputs : modified wavefront
 def modify_two_materials_case_2(wavefront,step_z,wavel,pattern_1,delta_1,beta_1,pattern_2,delta_2,beta_2):
     dist = step_z
     kz = 2 * np.pi * dist /wavel
-    beta_slice = zp_beta
-    delta_slice = zp_delta
-    modulation_1 = pattern_1*np.exp((kz * delta_1) * 1j) * np.exp(-kz *beta_1)
-    modulation_2 = pattern_2*np.exp((kz * delta_2) * 1j) * np.exp(-kz *beta_2)
+    modulation_1 = pattern_1*np.exp((kz*delta_1)*1j - kz *beta_1)
+    modulation_2 = pattern_2*np.exp((kz*delta_2)*1j - kz *beta_2)
     wavefront = wavefront * ( modulation_1 + modulation_2 )
     return wavefront
 
@@ -211,7 +207,8 @@ def optic_illumination(wavefront_input,
         step_z = d1
         p = decide(step_z,step_xy,L,wavel)
         print('Fresnel Number :',((L**2)/(wavel*step_z)))
-        wavefront  = p(wavefront,step_xy,L,wavel,step_z)
+        wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
+        
     
     
     #through object
@@ -221,12 +218,12 @@ def optic_illumination(wavefront_input,
     time.sleep(1) 
     if mode == 'parallel':
         for i in range(number_of_steps):    
-            wavefront = modify_two_materials_case_2(wavefront,step_z,wavel,zp,delta,beta,np.ones(np.shape(zp))-zp,0,0)
-            wavefront  = p(wavefront,step_xy,L,wavel,step_z)
+            wavefront = modify_two_materials_case_2(wavefront,step_z,wavel,pattern,delta,beta,np.ones(np.shape(pattern))-pattern,0,0)
+            wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
     else : 
         for i in tqdm(range(number_of_steps),desc='Propogation through '+str(xray_object)+'...'):
-            wavefront = modify_two_materials_case_2(wavefront,step_z,wavel,zp,delta,beta,np.ones(np.shape(zp))-zp,0,0)
-            wavefront  = p(wavefront,step_xy,L,wavel,step_z)
+            wavefront = modify_two_materials_case_2(wavefront,step_z,wavel,pattern,delta,beta,np.ones(np.shape(pattern))-pattern,0,0)
+            wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
 
     #post object
     if d2 !=0 :
@@ -234,11 +231,11 @@ def optic_illumination(wavefront_input,
         print('Free space propogation after '+str(xray_object)+'...')
         p = decide(step_z,step_xy,L,wavel)
         print('Fresnel Number :',((L**2)/(wavel*step_z)))
-        wavefront  = p(wavefront,step_xy,L,wavel,step_z)
+        wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
     
     wavefront_out = np.copy(wavefront)
     del wavefront
-    return wavefront_out
+    return wavefront_out,L
 
 
 '''(Deprecated : The following function fails since it doesn't take the effect of vaccuum. Currently working on a replacement)

@@ -6,10 +6,12 @@ Codes for multislice propogation
 * *fft_utils.py*    - pyfftw wrapper <br><br>
   * FFT2 - 2D fft
   * IFFT2 - 2D ifft
+  <br>
 * *prop.py*         - propogation routines including Transfer Function, Single Fourer Transform, Fraunhofer <br><br>
   * propTF  - Transfer function propogation
   * prop1FT - Single fourier transform propogation
   * propFF  - Fraunhofer propogation 
+  <br>
 * *prop_utils.py*   - utilities for multilsice propogation <br><br>
   * modify  - modify the wavefront by the material 
   * modify_two_materials_case_1, modify_two_materials_case_2 - mixing two materials
@@ -17,6 +19,7 @@ Codes for multislice propogation
   * number_of_steps - Compute the number of steps to be used for propogation within an object. 
   * plot_2d_complex - Plot the wavefront
   * optic_illumination - Utility function that takes an input wavefront and optic and produces the focal spot. 
+  <br>
 * *wisdom.pickle*   - file containing pre planned wisdom to elimnate the need for planning at runtime <br><br>
 
 **Testing**

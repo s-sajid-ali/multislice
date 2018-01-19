@@ -11,6 +11,7 @@ __all__ = ['FFT2',
 pyfftw builder interface is used to access the FFTW class and is optimized with pyfftw_wisdom. Multithreading is used to speed up the calculation. The input is destroyed as making a copy of the input is time consuming and is not useful.
 
 '''
+
 def FFT2(a,threads = 6):
     A = pyfftw.empty_aligned((np.shape(a)),dtype='complex128',n=32)
     
@@ -21,6 +22,8 @@ def FFT2(a,threads = 6):
     np.copyto(a,A)
     del(A)
     return None
+
+
 def IFFT2(a,threads = 6):
     A = pyfftw.empty_aligned((np.shape(a)),dtype='complex128',n=32)
     

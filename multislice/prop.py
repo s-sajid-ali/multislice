@@ -13,7 +13,6 @@ from multislice.fft_utils import FFT2,IFFT2
 '''
 contains functions propTF, propFF, prop1FT, propIR
 
-Review : Approximate propogators if possible !
 '''
 
 __all__ = ['propTF',
@@ -23,7 +22,7 @@ __all__ = ['propTF',
 
 
 '''
-Propogation using the Transfer function method. Note that fftfreq has been used from the numpy.fft library. Using this means that we no longer perform an fftshift after transforming u1 to frequency domain.
+Propogation using the Transfer function method.
 
 u1 is the profile of the beam at the input plane. 
 step is the sampling step size at the input plane.
@@ -33,6 +32,8 @@ z is the propogation distance
 
 u2 is the beam profile at the output plane
 L is the side length of the support at the output plane.
+
+TODO : Check if all the fftshifts can be removed !
 '''
 
 def propTF(u,step,L1,wavel,z) :

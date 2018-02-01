@@ -33,7 +33,6 @@ z is the propogation distance
 u2 is the beam profile at the output plane
 L is the side length of the support at the output plane.
 
-TODO : Check if all the fftshifts can be removed !
 '''
 
 def propTF(u,step,L1,wavel,z) :
@@ -42,16 +41,9 @@ def propTF(u,step,L1,wavel,z) :
     fx = np.fft.fftfreq(M,d=step)
     fy = np.fft.fftfreq(N,d=step)
     FX,FY = np.meshgrid((fx),(fy))
-    FX = pyfftw.interfaces.numpy_fft.fftshift(FX)
-    FY = pyfftw.interfaces.numpy_fft.fftshift(FY)
     
-    H = ne.evaluate('exp(-1j*(2*pi*z/wavel)*sqrt(1-wavel**2*(FX**2+FY**2)))')
-
     FFT2(u)
-    u = np.fft.fftshift(u)
-    u = ne.evaluate('H*u')
-    u = np.fft.ifftshift(u)
-    
+    u = ne.evaluate('exp(-1j*(2*pi*z/wavel)*sqrt(1-wavel**2*(FX**2+FY**2)))*u')
     IFFT2(u)
     
     return u,L1

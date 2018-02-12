@@ -78,7 +78,7 @@ def prop1FT(u,step,L1,wavel,z):
     #c = np.exp((-1j*z*2*np.pi/wavel)*np.sqrt(1+wavel**2*(FX**2+FY**2))) Kenan's approach!
     
     u = ne.evaluate('c0*u')
-    FFT2(u)
+    np.fft.fft2(u)
     u = np.fft.fftshift(u)
     u = ne.evaluate('c*u')
     u = ne.evaluate('u*(1j/(wavel*z))')

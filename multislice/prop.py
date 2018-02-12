@@ -8,6 +8,7 @@ Created on Mon Jul 24 11:38:01 2017
 import numpy as np
 import numexpr as ne
 import pyfftw
+import dask.array as da
 from multislice.fft_utils import FFT2,IFFT2
 
 '''
@@ -38,14 +39,13 @@ L is the side length of the support at the output plane.
 def propTF(u,step,L1,wavel,z) :
     M,N = np.shape(u)
     pi = np.pi
-    fx = np.fft.fftfreq(M,d=step)
-    fy = np.fft.fftfreq(N,d=step)
-    FX,FY = np.meshgrid((fx),(fy))
+    FX,FY = da.meshgrid(np.fft.fftfreq(M,step),np.fft.fftfreq(N,step))
     
-    FFT2(u)
+    #FFT2(u)
+    u = np.fft.fft2(u)
     u = ne.evaluate('exp(-1j*(2*pi*z/wavel)*sqrt(1-wavel**2*(FX**2+FY**2)))*u')
-    IFFT2(u)
-    
+    #IFFT2(u)
+    u = np.fft.ifft2(u)
     return u,L1
 
 '''
@@ -57,12 +57,14 @@ def prop1FT(u,step,L1,wavel,z):
     x = np.linspace(-L1/2.0,L1/2.0-step,M)
     y = np.linspace(-L1/2.0,L1/2.0-step,N)
     
+    '''
+    #Kenan's approach
     fx = np.fft.fftfreq(M,d=step)
     fy = np.fft.fftfreq(N,d=step)
     fx = pyfftw.interfaces.numpy_fft.fftshift(fx)
     fy = pyfftw.interfaces.numpy_fft.fftshift(fy)
-    FX,FY = np.meshgrid((fx),(fy))
-    
+    FX,FY = da.meshgrid((fx),(fy))
+    '''
     
     X,Y = np.meshgrid(x,y)
     L_out = wavel*z/step

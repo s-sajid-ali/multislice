@@ -3,6 +3,7 @@ from multislice import prop
 import matplotlib.pyplot as plt
 from tqdm import tqdm, trange
 import time
+import numexpr as ne
 from skimage.restoration import unwrap_phase
 
 __all__ = ['modify',
@@ -88,13 +89,9 @@ Inputs  : wavefront, propogation distance,wavelength, pattern of first material,
 Outputs : modified wavefront
 '''
 def modify_two_materials_case_2(wavefront,step_z,wavel,pattern_1,delta_1,beta_1,pattern_2,delta_2,beta_2):
-    dist = step_z
-    kz = 2 * np.pi * dist /wavel
-    modulation_1 = pattern_1*np.exp((kz*delta_1)*1j - kz *beta_1)
-    modulation_2 = pattern_2*np.exp((kz*delta_2)*1j - kz *beta_2)
-    wavefront = wavefront * ( modulation_1 + modulation_2 )
-    return wavefront
-
+    pi = np.pi
+    kz = ne.evaluate('2 * pi * step_z /wavel')
+    return ne.evaluate('wavefront * ( pattern_1*exp((kz*delta_1)*1j - kz*beta_1)+pattern_2*exp((kz*delta_2)*1j - kz*beta_2) )')
 
 
 '''
@@ -218,8 +215,13 @@ def optic_illumination(wavefront_input,
     time.sleep(1) 
     if mode == 'parallel':
         for i in range(number_of_steps):    
+            t0 = time.time()
             wavefront = modify_two_materials_case_2(wavefront,step_z,wavel,pattern,delta,beta,np.ones(np.shape(pattern))-pattern,0,0)
+            t1 = time.time()
+           
             wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
+            t2 = time.time()
+            print(i,'modify : ',t1-t0,'prop :',t2-t1)
     else : 
         for i in tqdm(range(number_of_steps),desc='Propogation through '+str(xray_object)+'...'):
             wavefront = modify_two_materials_case_2(wavefront,step_z,wavel,pattern,delta,beta,np.ones(np.shape(pattern))-pattern,0,0)

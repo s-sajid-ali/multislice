@@ -2,7 +2,9 @@ import pyfftw
 import numpy as np
 import pickle
 
-pyfftw.import_wisdom(pickle.load(open('/home/sajid/packages/multislice/multislice/wisdom.pickle','rb')))
+
+pyfftw.import_wisdom(pickle.load(open('/raid/home/sajid/multislice/multislice/wisdom.pickle','rb')))
+
 
 __all__ = ['FFT2',
            'IFFT2']

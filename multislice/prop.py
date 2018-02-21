@@ -64,25 +64,26 @@ def prop1FT(u,step,L1,wavel,z):
     fx = pyfftw.interfaces.numpy_fft.fftshift(fx)
     fy = pyfftw.interfaces.numpy_fft.fftshift(fy)
     FX,FY = da.meshgrid((fx),(fy))
+    c = np.exp((-1j*z*2*np.pi/wavel)*np.sqrt(1+wavel**2*(FX**2+FY**2)))
     '''
     
-    X,Y = np.meshgrid(x,y)
     L_out = wavel*z/step
     step2 = wavel*z/L1
-    x2 = np.linspace(-L_out/2.0,L_out/2.0,M)
-    y2 = np.linspace(-L_out/2.0,L_out/2.0,N)
-    X2,Y2 = np.meshgrid(x2,y2)
     pi = np.pi
-    c0  = ne.evaluate('exp((-1j*2*pi/wavel)*sqrt(X**2+Y**2+z**2))')
-    c   = ne.evaluate('exp((-1j*2*pi/wavel)*sqrt(X2**2+Y2**2+z**2))')
-    #c = np.exp((-1j*z*2*np.pi/wavel)*np.sqrt(1+wavel**2*(FX**2+FY**2))) Kenan's approach!
+    X,Y = da.meshgrid(x,y)
+    u  = ne.evaluate('exp((-1j*2*pi/wavel)*sqrt(X**2+Y**2+z**2))*u')
+    del X,Y
     
-    u = ne.evaluate('c0*u')
     u = np.fft.fft2(u)
     u = np.fft.fftshift(u)
-    u = ne.evaluate('c*u')
-    u = ne.evaluate('u*(1j/(wavel*z))')
-    u = u*step*step
+    
+    x2 = np.linspace(-L_out/2.0,L_out/2.0,M)
+    y2 = np.linspace(-L_out/2.0,L_out/2.0,N)
+    X2,Y2 = da.meshgrid(x2,y2)
+    u   = ne.evaluate('exp((-1j*2*pi/wavel)*sqrt(X2**2+Y2**2+z**2))*u')
+    del X2,Y2
+    
+    u = ne.evaluate('u*(1j/(wavel*z))*step*step')
     
     return u,L_out
 
@@ -100,6 +101,7 @@ def propFF(u,step,L1,wavel,z):
     x2 = np.linspace(-L_out/2.0,L_out/2.0,M)
     y2 = np.linspace(-L_out/2.0,L_out/2.0,N)
     X2,Y2 = np.meshgrid(x2,y2) 
+    
     c =ne.evaluate('exp((1j*k*(1/(2*z)))*(X2**2+Y2**2))')*(1/(1j*wavel*z))
     u = pyfftw.interfaces.numpy_fft.fftshift(u)
     

@@ -1,0 +1,9 @@
+setup.py
+multislice/fft_utils.py
+multislice/prop.py
+multislice/prop_utils.py
+multislice.egg-info/PKG-INFO
+multislice.egg-info/SOURCES.txt
+multislice.egg-info/dependency_links.txt
+multislice.egg-info/not-zip-safe
+multislice.egg-info/top_level.txt

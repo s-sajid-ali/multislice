@@ -1,5 +1,6 @@
 import numpy as np
 from multislice import prop
+from multislice.fft_utils import FFT_2d_Obj
 import matplotlib.pyplot as plt
 from tqdm import tqdm, trange
 import time
@@ -19,9 +20,9 @@ __all__ = ['modify',
 '''
 decide : decide whether to use TF or IR approach depending on the distance
 
-Inputs : step size in z, step size in xy, support length, wavelength
+Inputs - step size in z, step size in xy, support length, wavelength
 
-Outputs : propogator 
+Outputs - propogator 
 '''
 def decide(step_z,step_xy,L,wavel):
     dist = step_z
@@ -45,9 +46,10 @@ def decide(step_z,step_xy,L,wavel):
 '''
 modify : wavefront is modified according to the material present
 
-Inputs  : wavefront, slice properties (here the zone plate),step size in z , wavelength
+Inputs - wavefront, slice properties (here the zone plate),step size in z , wavelength
 
-Outputs : modified wavefront
+Outputs - modified wavefront
+
 (used as part of the multislice loop)
 '''
 def modify(wavefront,zp_delta,zp_beta,step_z,wavel):
@@ -64,56 +66,68 @@ def modify(wavefront,zp_delta,zp_beta,step_z,wavel):
 modify_two_materials_case_1 : wavefront is modified according to the materials present that are horizontally stacked
                               (Fig 8, a-(i) in Optics Express Vol. 25, Issue 3, pp. 1831-1846)
 
-Inputs  : wavefront, propogation distance,wavelength, pattern of first material, delta, beta(first material),
+Inputs  - wavefront, propogation distance,wavelength, pattern of first material, delta, beta(first material),
           pattern_2,delta, beta(second material) 
           
-Outputs : modified wavefront
+Outputs - modified wavefront
 '''
 def modify_two_materials_case_1(wavefront,step_z,wavel,frac_1,frac_2,pattern_1,delta_1,beta_1,pattern_2,delta_2,beta_2):
     dist = step_z
     kz_1 = 2 * np.pi * dist * frac_1 /wavel
     kz_2 = 2 * np.pi * dist * frac_2 /wavel
+        
+    '''
+    Collapsing the following into one numexpr statement : 
     modulation_1 = pattern_1*np.exp((kz_1 * delta_1)*1j -kz_1*beta_1)
     modulation_2 = pattern_2*np.exp((kz_2 * delta_2)*1j -kz_2*beta_2)
-    wavefront = wavefront * ( modulation_1 * modulation_2 )
-    return wavefront
+    output = wavefront * ( modulation_1 * modulation_2 )
+    '''
+    
+    return ne.evaluate('wavefront*(pattern_1*exp((kz_1*delta_1)*1j -kz_1*beta_1)*pattern_2*exp((kz_2*delta_2)*1j -kz_2*beta_2))')
 
 
 '''
 modify_two_materials_case_2 : wavefront is modified according to the materials present that are vertically stacked
                               (Fig 8, a-(ii) in Optics Express Vol. 25, Issue 3, pp. 1831-1846)
 
-Inputs  : wavefront, propogation distance,wavelength, pattern of first material, delta, beta(first material),
+Inputs  - wavefront, propogation distance,wavelength, pattern of first material, delta, beta(first material),
           pattern_2,delta, beta(second material) 
           
-Outputs : modified wavefront
+Outputs - modified wavefront
 '''
 def modify_two_materials_case_2(wavefront,step_z,wavel,pattern_1,delta_1,beta_1,pattern_2,delta_2,beta_2):
     pi = np.pi
     kz = ne.evaluate('2 * pi * step_z /wavel')
+    
+    '''
+    Collapsing the following into one numexpr statement : 
+    modulation_1 = exp((kz*delta_1)*1j - kz*beta_1)
+    modulation_2 = exp((kz*delta_2)*1j - kz*beta_2)
+    output = wavefront * ( pattern_1*modulation_1 + pattern_2*modulation_2 )
+    '''
+    
     return ne.evaluate('wavefront * ( pattern_1*exp((kz*delta_1)*1j - kz*beta_1)+pattern_2*exp((kz*delta_2)*1j - kz*beta_2) )')
 
 
 '''
 propogate : wavefront is propogated for the specified distance using the method decided above
 
-Inputs  : wavefront, step size in z, step size in xy, wavelength, propogator
+Inputs  - wavefront, step size in z, step size in xy, wavelength, propogator
 
-Outputs : wavefront at output plane
+Outputs - wavefront at output plane
 '''
 def propogate(wavefront,step_xy,step_z,L,wavel,p):
-    sampling = step_xy
-    dist = step_z
-    return p(wavefront,sampling,L,wavel,dist)
+    
+    return p(wavefront,step_xy,L,wavel,step_z)
 
 
 
 '''
 plot_2d_complex : function used to plot complex 2d array
 
-Inputs  : input_array - input array to be plotted, name - name of the variable being plotted, mode - used to specify linear or log plot , coords - used to plot the boundaries(as **kwargs)
+Inputs  - input_array : input array to be plotted, name : name of the variable being plotted, mode : used to specify linear or log plot , coords : used to plot the boundaries(as **kwargs)
 
-Outputs : plots of magnitude and phase!
+Outputs - plots of magnitude and phase!
 '''
 def plot_2d_complex(input_array,mode='linear',name='input_array',*args,**kwargs):
     fig, (ax1,ax2) = plt.subplots(1,2)
@@ -160,9 +174,9 @@ def plot_2d_complex(input_array,mode='linear',name='input_array',*args,**kwargs)
 '''
 number_of_steps : calculate number of steps required for propogation along direction of beam
 
-Inputs  : step_xy - sampling size in xy plane, wavel - wavelength, thickness - thickness of object
+Inputs  - step_xy : sampling size in xy plane, wavel : wavelength, thickness : thickness of object
 
-Outputs : number of steps - number of steps for propogation through the object 
+Outputs - number of steps : number of steps for propogation through the object 
 (As per the meteric described in Optics Express Vol. 25, Issue 3, pp. 1831-1846)
 '''
 def number_of_steps(step_xy,wavel,thickness):
@@ -176,22 +190,27 @@ def number_of_steps(step_xy,wavel,thickness):
 
 
 
-'''(Prototype for replacement of propogate_through_object)
+'''
 optic_illumination : calculate illumination from zone plate (or any other xray optic)
 
-Inputs  : wavefront - input wave, zp_delta,zp_beta - zone plate, zp_thickness - thickness of zone plate, number_of_steps_zp - number of steps for propogation through zp, d1 - propogation distance before zp, d2 - propogation distance after zp (typically the focal length) 
+Inputs  - wavefront : input wave, pattern : pattern of the optic along one plane,delta,beta : refractive index of the optic, thickness : thickness of zone plate, number_of_steps_zp : number of steps for propogation through zp, d1 : propogation distance before zp, d2 : propogation distance after zp (typically the focal length) 
 
-Outputs : wavefront - output wave
+Outputs - wavefront : output wave
 '''
 def optic_illumination(wavefront_input,
                        pattern,delta,beta,
                        thickness,step_xy,wavel,
-                       number_of_steps,d1,d2,**kwargs):
+                       number_of_steps,d1,d2,use_fftw='True',**kwargs):
     
     wavefront = np.copy(wavefront_input)
     L = np.shape(wavefront_input)[0]*step_xy
     xray_object = str('zone plate')
     mode = str('serial')
+    if use_fftw == 'True':
+        fft_obj = FFT_2d_Obj(np.shape(wavefront))
+    else :
+        fft_obj = None
+
     if 'xray_object' in kwargs :
         xray_object = kwargs['xray_object']
     if 'mode' in kwargs : 
@@ -204,7 +223,7 @@ def optic_illumination(wavefront_input,
         step_z = d1
         p = decide(step_z,step_xy,L,wavel)
         print('Fresnel Number :',((L**2)/(wavel*step_z)))
-        wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
+        wavefront,L  = p(wavefront,step_xy,L,wavel,step_z,fft_obj)
         
     
     
@@ -219,7 +238,7 @@ def optic_illumination(wavefront_input,
             wavefront = modify_two_materials_case_2(wavefront,step_z,wavel,pattern,delta,beta,np.ones(np.shape(pattern))-pattern,0,0)
             t1 = time.time()
            
-            wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
+            wavefront,L  = p(wavefront,step_xy,L,wavel,step_z,fft_obj)
             t2 = time.time()
             print(i,'modify : ',t1-t0,'prop :',t2-t1)
     else : 
@@ -231,67 +250,10 @@ def optic_illumination(wavefront_input,
     if d2 !=0 :
         step_z = d2
         print('Free space propogation after '+str(xray_object)+'...')
-        p = decide(step_z,step_xy,L,wavel)
+        p = decide(step_z,step_xy,L,wavel,fft_obj)
         print('Fresnel Number :',((L**2)/(wavel*step_z)))
         wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
     
     wavefront_out = np.copy(wavefront)
     del wavefront
     return wavefront_out,L
-
-
-'''(Deprecated : The following function fails since it doesn't take the effect of vaccuum. Currently working on a replacement)
-(Try not to use delta_slice and beta_slice, calcualte them at execution time)
-propogate_throguh_object : function used to propogate through object
-
-Inputs  : wavefront - input wave, zp_delta,zp_beta - zone plate, zp_thickness - thickness of zone plate, number_of_steps_zp - number of steps for propogation through zp, d1 - propogation distance before zp, d2 - propogation distance after zp
-
-Outputs : wavefront - output wave
-'''
-def propogate_through_object(wavefront_input,
-                             delta_slice,beta_slice,
-                             thickness,step_xy,wavel,L,
-                             number_of_steps,d1,d2,**kwargs):
-    
-    wavefront = np.copy(wavefront_input)
-    xray_object = str('place_holder_object')
-    mode = str('serial')
-    if 'xray_object' in kwargs :
-        xray_object = kwargs['xray_object']
-    if 'mode' in kwargs : 
-        mode = kwargs['mode']    
-      
-    
-    #pre object
-    if d1 != 0 :
-        print('Free space propogation before '+str(xray_object)+'...')
-        step_z = d1
-        p = decide(step_z,step_xy,L,wavel)
-        print('Fresnel Number :',((L**2)/(wavel*step_z)))
-        wavefront  = p(wavefront,step_xy,L,wavel,step_z)
-    
-    
-    #through object
-    step_z = thickness/number_of_steps
-    p = decide(step_z,step_xy,L,wavel)
-    print('Fresnel Number :',((L**2)/(wavel*step_z)))
-    time.sleep(1) 
-    if mode == 'parallel':
-        for i in range(number_of_steps):    
-            wavefront = modify(wavefront,delta_slice,beta_slice,step_z,wavel)
-            wavefront  = p(wavefront,step_xy,L,wavel,step_z)
-    else : 
-        for i in tqdm(range(number_of_steps),desc='Propogation through '+str(xray_object)+'...'):
-            wavefront = modify(wavefront,delta_slice,beta_slice,step_z,wavel)
-            wavefront  = p(wavefront,step_xy,L,wavel,step_z)
-
-    #post object
-    if d2 !=0 :
-        step_z = d2
-        print('Free space propogation after '+str(xray_object)+'...')
-        p = decide(step_z,step_xy,L,wavel)
-        print('Fresnel Number :',((L**2)/(wavel*step_z)))
-        wavefront  = p(wavefront,step_xy,L,wavel,step_z)
-    
-    wavefront_out = np.copy(wavefront)
-    return wavefront_out

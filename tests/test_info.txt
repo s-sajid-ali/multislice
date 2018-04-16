@@ -1,1 +1,0 @@
-This code is checked against https://github.com/mdw771/xdesign/blob/master/tests/test_tube_particles.py

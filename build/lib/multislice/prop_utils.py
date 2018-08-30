@@ -13,8 +13,7 @@ __all__ = ['modify',
            'decide',
            'plot_2d_complex',
            'number_of_steps',
-           'optic_illumination',
-           'propogate_through_object']
+           'optic_illumination',]
 
 
 '''
@@ -70,6 +69,8 @@ Inputs  - wavefront, propogation distance,wavelength, pattern of first material,
           pattern_2,delta, beta(second material) 
           
 Outputs - modified wavefront
+
+(used as part of the multislice loop)
 '''
 def modify_two_materials_case_1(wavefront,step_z,wavel,frac_1,frac_2,pattern_1,delta_1,beta_1,pattern_2,delta_2,beta_2):
     dist = step_z
@@ -94,6 +95,8 @@ Inputs  - wavefront, propogation distance,wavelength, pattern of first material,
           pattern_2,delta, beta(second material) 
           
 Outputs - modified wavefront
+
+(used as part of the multislice loop)
 '''
 def modify_two_materials_case_2(wavefront,step_z,wavel,pattern_1,delta_1,beta_1,pattern_2,delta_2,beta_2):
     pi = np.pi
@@ -107,19 +110,6 @@ def modify_two_materials_case_2(wavefront,step_z,wavel,pattern_1,delta_1,beta_1,
     '''
     
     return ne.evaluate('wavefront * ( pattern_1*exp((kz*delta_1)*1j - kz*beta_1)+pattern_2*exp((kz*delta_2)*1j - kz*beta_2) )')
-
-
-'''
-propogate : wavefront is propogated for the specified distance using the method decided above
-
-Inputs  - wavefront, step size in z, step size in xy, wavelength, propogator
-
-Outputs - wavefront at output plane
-'''
-def propogate(wavefront,step_xy,step_z,L,wavel,p):
-    
-    return p(wavefront,step_xy,L,wavel,step_z)
-
 
 
 '''

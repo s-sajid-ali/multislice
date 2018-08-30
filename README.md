@@ -25,4 +25,12 @@ Codes for multislice propogation
 **Testing**
 * The tests folder has ipython notebooks which compare the results with [this](https://github.com/mdw771/xdesign/blob/master/tests/test_tube_particles.py) test case(Note that at the moment the ffts use 6 threads and the test case has dimensions of 255x255). Additional tests evaluate the performance of ffts.<br>
 
+**Requirements**
+* numpy 
+* numexpr
+* pyfftw
+* scikit-image
+* dask
+* tqdm
+
 Also, note that one must configure the pyfftw parameters and wisdom for whichever machine this package is going to be used on.

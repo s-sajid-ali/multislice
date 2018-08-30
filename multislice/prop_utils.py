@@ -240,7 +240,7 @@ def optic_illumination(wavefront_input,
     if d2 !=0 :
         step_z = d2
         print('Free space propogation after '+str(xray_object)+'...')
-        p = decide(step_z,step_xy,L,wavel,fft_obj)
+        p = decide(step_z,step_xy,L,wavel)
         print('Fresnel Number :',((L**2)/(wavel*step_z)))
         wavefront,L  = p(wavefront,step_xy,L,wavel,step_z)
     

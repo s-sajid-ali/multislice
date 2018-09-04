@@ -115,9 +115,9 @@ def modify_two_materials_case_2(wavefront,step_z,wavel,pattern_1,delta_1,beta_1,
 
 '''
 find_edge : get the distance of the pixel of interest from the edge of the array
-Inputs : x - co-ordinate of the pixel (where the wavefront in the focal plane hits it's maximum value),
+Inputs - x - co-ordinate of the pixel (where the wavefront in the focal plane hits it's maximum value),
                                            grid_size, n - length of the spot we would like to capture
-Outputs : if the desired length 'n' can be safely captured, the output is n, else the output is the number
+Outputs - if the desired length 'n' can be safely captured, the output is n, else the output is the number
               of pixels one can capture (the only reason this would happen
 '''                                                                                                                                          is if the focal spot is too close to the edge of the output wavefront due to tilt (remember that intput wavefront gets tilted))
 def find_edge(x,grid_size,n):

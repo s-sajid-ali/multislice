@@ -119,7 +119,8 @@ Inputs - x - co-ordinate of the pixel (where the wavefront in the focal plane hi
                                            grid_size, n - length of the spot we would like to capture
 Outputs - if the desired length 'n' can be safely captured, the output is n, else the output is the number
               of pixels one can capture (the only reason this would happen
-'''                                                                                                                                          is if the focal spot is too close to the edge of the output wavefront due to tilt (remember that intput wavefront gets tilted))
+              is if the focal spot is too close to the edge of the output wavefront due to tilt (remember that intput wavefront gets tilted))
+'''
 def find_edge(x,grid_size,n):
     if x<(grid_size/2):
         if x>n:

@@ -16,7 +16,7 @@ Multislice wave propagation in Python.
   * plot_2d_complex - Plot the wavefront
   * optic_illumination - Utility function that takes an input wavefront and optic and produces the focal spot. 
   <br>
-* `fft_utils.py`    - pyfftw wrapper (Optional) <br><br> 
+* `fft_utils.py`    - pyfftw wrapper (numpy.fft can be used as well) <br><br> 
   * FFT2 - 2D fft
   * IFFT2 - 2D ifft
   <br>

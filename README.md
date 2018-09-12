@@ -2,7 +2,7 @@
 
 Multislice wave propagation in Python. 
 
-**Contents** 
+#### Contents
 * `prop.py`         - propogation routines including Transfer Function, Single Fourer Transform, Fraunhofer <br><br>
   * propTF  - Transfer function propogation
   * prop1FT - Single fourier transform propogation
@@ -22,10 +22,10 @@ Multislice wave propagation in Python.
   <br>
 * `wisdom.pickle`   - file containing pre planned wisdom to elimnate the need for planning at runtime <br><br>
 
-**Testing**
-* The tests folder has ipython notebooks which compare the results with [this](https://github.com/mdw771/xdesign/blob/master/tests/test_tube_particles.py) test case. Additional tests evaluate the performance of ffts.<br>
+#### Testing
+The tests folder has ipython notebooks which compare the results with [this](https://github.com/mdw771/xdesign/blob/master/tests/test_tube_particles.py) test case. Additional tests evaluate the performance of ffts.<br>
 
-**Requirements**
+#### Requirements
 * numpy 
 * numexpr
 * scikit-image
@@ -35,5 +35,5 @@ Multislice wave propagation in Python.
 
 Note that one must configure the pyfftw parameters and wisdom for whichever machine this package is going to be used on.
 
-**Credits**
-* This work is based on [1](https://www.osapublishing.org/oe/abstract.cfm?uri=oe-25-3-1831).
+#### Credits
+This work is based on [1](https://www.osapublishing.org/oe/abstract.cfm?uri=oe-25-3-1831).

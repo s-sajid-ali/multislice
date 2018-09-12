@@ -36,4 +36,4 @@ Multislice wave propagation in Python.
 Note that one must configure the pyfftw parameters and wisdom for whichever machine this package is going to be used on.
 
 **Credits**
-This work is based on [1](https://www.osapublishing.org/oe/abstract.cfm?uri=oe-25-3-1831).
+* This work is based on [1](https://www.osapublishing.org/oe/abstract.cfm?uri=oe-25-3-1831).

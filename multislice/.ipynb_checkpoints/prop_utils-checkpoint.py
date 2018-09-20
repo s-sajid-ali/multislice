@@ -11,6 +11,8 @@ __all__ = ['modify',
            'modify_two_materials_case_1',
            'modify_two_materials_case_2',
            'decide',
+           'find_edge',
+           'get_focal_spot',
            'plot_2d_complex',
            'number_of_steps',
            'optic_illumination',]
@@ -87,6 +89,8 @@ def modify_two_materials_case_1(wavefront,step_z,wavel,frac_1,frac_2,pattern_1,d
     return ne.evaluate('wavefront*(pattern_1*exp((kz_1*delta_1)*1j -kz_1*beta_1)*pattern_2*exp((kz_2*delta_2)*1j -kz_2*beta_2))')
 
 
+
+
 '''
 modify_two_materials_case_2 : wavefront is modified according to the materials present that are vertically stacked
                               (Fig 8, a-(ii) in Optics Express Vol. 25, Issue 3, pp. 1831-1846)
@@ -110,6 +114,56 @@ def modify_two_materials_case_2(wavefront,step_z,wavel,pattern_1,delta_1,beta_1,
     '''
     
     return ne.evaluate('wavefront * ( pattern_1*exp((kz*delta_1)*1j - kz*beta_1)+pattern_2*exp((kz*delta_2)*1j - kz*beta_2) )')
+
+
+
+
+'''
+find_edge : get the distance of the pixel of interest from the edge of the array
+Inputs - x - co-ordinate of the pixel (where the wavefront in the focal plane hits it's maximum value),
+                                           grid_size, n - length of the spot we would like to capture
+Outputs - if the desired length 'n' can be safely captured, the output is n, else the output is the number
+          of pixels one can capture (the only reason this would happen
+          is if the focal spot is too close to the edge of the output wavefront due to tilt 
+          (remember that intput wavefront gets tilted))
+'''
+def find_edge(x,grid_size,n):
+    if x<(grid_size/2):
+        if x>n:
+            return n
+        else :
+            return int(np.floor(x / 2) * 2)
+    else :
+        if (grid_size-x)>n:
+            return n
+        else :
+            return int(np.floor((grid_size-x) / 2) * 2)
+
+
+        
+        
+'''
+get_focal_spot : get the region in the output plane containing the focal spot
+Inputs  : focal_plane - the wavefront at the focal plane, grid_size, n - half-size of the array to be returned
+Outputs : a numpy array containing the focal spot
+'''
+def get_focal_spot(focal_plane_,grid_size,n=250):
+    x_,y_ = np.where(focal_plane_==np.max(focal_plane_))
+    x_ = x_[0]
+    y_ = y_[0]
+ 
+    x1 = find_edge(x_,grid_size,n)
+    y1 = find_edge(y_,grid_size,n)
+    
+    print('max_loc :',x_,y_,x1,y1)
+    
+    focal_spot_ = np.zeros((2*n,2*n))
+    if (x1+y1) != 2*n:
+        focal_spot_[n-x1:n+x1,n-y1:n+y1] = focal_plane_[x_-x1:x_+x1,y_-y1:y_+y1]
+    else :
+        focal_spot_[:,:] = focal_plane_[x_-n:x_+n,y_-n:y_+n]
+    return focal_spot_,x_,y_,np.max(focal_plane_)
+
 
 
 '''

@@ -227,7 +227,7 @@ def number_of_steps(step_xy,wavel,thickness):
     eps1 = 0.1
     eps2 = 0.1
     delta_z_suggested = ((eps2*(step_xy**2))/(eps1**2*wavel))
-    number_of_steps = int(np.ceil(thickness/delta_z_suggested))+1
+    number_of_steps = int(thickness/delta_z_suggested)
     print('suggested step size :',delta_z_suggested)
     print('number of steps required for propogation through the zone plate :',number_of_steps)
     return number_of_steps

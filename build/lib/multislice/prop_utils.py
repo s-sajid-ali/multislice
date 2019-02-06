@@ -89,6 +89,8 @@ def modify_two_materials_case_1(wavefront,step_z,wavel,frac_1,frac_2,pattern_1,d
     return ne.evaluate('wavefront*(pattern_1*exp((kz_1*delta_1)*1j -kz_1*beta_1)*pattern_2*exp((kz_2*delta_2)*1j -kz_2*beta_2))')
 
 
+
+
 '''
 modify_two_materials_case_2 : wavefront is modified according to the materials present that are vertically stacked
                               (Fig 8, a-(ii) in Optics Express Vol. 25, Issue 3, pp. 1831-1846)
@@ -113,13 +115,17 @@ def modify_two_materials_case_2(wavefront,step_z,wavel,pattern_1,delta_1,beta_1,
     
     return ne.evaluate('wavefront * ( pattern_1*exp((kz*delta_1)*1j - kz*beta_1)+pattern_2*exp((kz*delta_2)*1j - kz*beta_2) )')
 
+
+
+
 '''
 find_edge : get the distance of the pixel of interest from the edge of the array
 Inputs - x - co-ordinate of the pixel (where the wavefront in the focal plane hits it's maximum value),
                                            grid_size, n - length of the spot we would like to capture
 Outputs - if the desired length 'n' can be safely captured, the output is n, else the output is the number
-              of pixels one can capture (the only reason this would happen
-              is if the focal spot is too close to the edge of the output wavefront due to tilt (remember that intput wavefront gets tilted))
+          of pixels one can capture (the only reason this would happen
+          is if the focal spot is too close to the edge of the output wavefront due to tilt 
+          (remember that intput wavefront gets tilted))
 '''
 def find_edge(x,grid_size,n):
     if x<(grid_size/2):
@@ -134,6 +140,8 @@ def find_edge(x,grid_size,n):
             return int(np.floor((grid_size-x) / 2) * 2)
 
 
+        
+        
 '''
 get_focal_spot : get the region in the output plane containing the focal spot
 Inputs  : focal_plane - the wavefront at the focal plane, grid_size, n - half-size of the array to be returned
@@ -155,6 +163,8 @@ def get_focal_spot(focal_plane_,grid_size,n=250):
     else :
         focal_spot_[:,:] = focal_plane_[x_-n:x_+n,y_-n:y_+n]
     return focal_spot_,x_,y_,np.max(focal_plane_)
+
+
 
 '''
 plot_2d_complex : function used to plot complex 2d array
@@ -217,7 +227,7 @@ def number_of_steps(step_xy,wavel,thickness):
     eps1 = 0.1
     eps2 = 0.1
     delta_z_suggested = ((eps2*(step_xy**2))/(eps1**2*wavel))
-    number_of_steps = int(np.ceil(thickness/delta_z_suggested))+1
+    number_of_steps = int(thickness/delta_z_suggested)
     print('suggested step size :',delta_z_suggested)
     print('number of steps required for propogation through the zone plate :',number_of_steps)
     return number_of_steps

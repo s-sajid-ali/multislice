@@ -200,11 +200,9 @@ def plot_2d_complex(input_array,mode='linear',name='input_array',*args,**kwargs)
         ax1.title.set_text('magnitude  of '+str(name)+' ( in '+str(mode)+' scale)')
         ax1.title.set_y(1.08)
         fig.colorbar(im1,ax = ax1)
-        ax1.set_xlabel('axes in 10^('+str(scaling)+')')
         im2 = ax2.imshow(unwrap_phase(np.angle(input_array)))
         ax2.title.set_text('phase of '+str(name))
         ax2.title.set_y(1.08)
-        ax2.set_xlabel('axes in 10^('+str(scaling)+')')
         fig.subplots_adjust(right=1.75)
         fig.colorbar(im2,ax = ax2) 
     plt.show()
@@ -248,7 +246,7 @@ def optic_illumination(wavefront_input,
     
     wavefront = np.copy(wavefront_input)
     L = np.shape(wavefront_input)[0]*step_xy
-    xray_object = str('zone plate')
+    xray_object = str('xray optical element')
     mode = str('serial')
     if use_fftw == 'True':
         fft_obj = FFT_2d_Obj(np.shape(wavefront))

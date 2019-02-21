@@ -246,7 +246,7 @@ def optic_illumination(wavefront_input,
     
     wavefront = np.copy(wavefront_input)
     L = np.shape(wavefront_input)[0]*step_xy
-    xray_object = str('zone plate')
+    xray_object = str('xray optical element')
     mode = str('serial')
     if use_fftw == 'True':
         fft_obj = FFT_2d_Obj(np.shape(wavefront))

@@ -157,7 +157,7 @@ def get_focal_spot(focal_plane_,grid_size,n=250):
     
     print('max_loc :',x_,y_,x1,y1)
     
-    focal_spot_ = np.zeros((2*n,2*n))
+    focal_spot_ = np.zeros((2*n,2*n),dtype='complex')
     if (x1+y1) != 2*n:
         focal_spot_[n-x1:n+x1,n-y1:n+y1] = focal_plane_[x_-x1:x_+x1,y_-y1:y_+y1]
     else :

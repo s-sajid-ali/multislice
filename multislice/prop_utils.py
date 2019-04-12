@@ -148,7 +148,7 @@ Inputs  : focal_plane - the wavefront at the focal plane, grid_size, n - half-si
 Outputs : a numpy array containing the focal spot
 '''
 def get_focal_spot(focal_plane_,grid_size,n=250):
-    x_,y_ = np.where(focal_plane_==np.max(focal_plane_))
+    x_,y_ = np.where(np.abs(focal_plane_)==np.max(np.abs(focal_plane_)))
     x_ = x_[0]
     y_ = y_[0]
  

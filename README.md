@@ -36,4 +36,4 @@ The tests folder has ipython notebooks which compare the results with [this](htt
 Note that one must configure the pyfftw parameters and wisdom for whichever machine this package is going to be used on.
 
 #### Credits
-This work is based on Multislice does it all : calculating the performance of nanofocusing x-ray optics, Optics Express, vol. 25, 2017 by Kenan Li, M. J. Wojcik, and C. Jacobsen.
+This work is based on `Multislice does it all : calculating the performance of nanofocusing x-ray optics, Optics Express, vol. 25, 2017 `.

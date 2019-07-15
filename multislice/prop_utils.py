@@ -58,8 +58,11 @@ def modify(wavefront,zp_delta,zp_beta,step_z,wavel):
     kz = 2 * np.pi * dist /wavel
     beta_slice = zp_beta
     delta_slice = zp_delta
-    new_wavefront = wavefront * np.exp((kz * delta_slice) * 1j) * np.exp(-kz * beta_slice)
-    return new_wavefront
+    '''
+    Perform the following with numexpr
+    wavefront * np.exp((kz * delta_slice) * 1j) * np.exp(-kz * beta_slice)
+    '''
+    return ne.evaluate('wavefront*exp((kz*delta_slice)*1j  - (kz*beta_slice))')
 
 
 

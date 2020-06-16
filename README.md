@@ -3,10 +3,11 @@
 Multislice wave propagation in Python. 
 
 #### Contents
-* `prop.py`         - propogation routines including Transfer Function, Single Fourer Transform, Fraunhofer <br><br>
-  * propTF  - Transfer function propogation
-  * prop1FT - Single fourier transform propogation
-  * propFF  - Fraunhofer propogation 
+* `prop.py` - propogation routines including Transfer Function, Single Fourer Transform, Fraunhofer, Impulse Response <br><br>
+  * propTF  - Transfer function propogator
+  * prop1FT - Single fourier transform propogator
+  * propFF  - Fraunhofer propogator
+  * propIR  - Impulse Response propogator
   <br>
 * `prop_utils.py`   - utilities for multilsice propogation <br><br>
   * modify  - modify the wavefront by the material 
@@ -22,18 +23,11 @@ Multislice wave propagation in Python.
   <br>
 * `wisdom.pickle`   - file containing pre planned wisdom to elimnate the need for planning at runtime <br><br>
 
+#### Installation : 
+Clone the directory via git clone and run `pip install .`. Note that this project uses [flit](https://github.com/takluyver/flit/) as it's build system.
+
 #### Testing
 The tests folder has ipython notebooks which compare the results with [this](https://github.com/mdw771/xdesign/blob/master/tests/test_tube_particles.py) test case. Additional tests evaluate the performance of ffts.<br>
-
-#### Requirements
-* numpy 
-* numexpr
-* scikit-image
-* dask
-* tqdm
-* pyfftw
-
-Note that one must configure the pyfftw parameters and wisdom for whichever machine this package is going to be used on.
 
 #### Credits
 This work is based on `Multislice does it all : calculating the performance of nanofocusing x-ray optics, Optics Express, vol. 25, 2017 `.

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "multislice"
+author = "Sajid Ali"
+author-email = "sajidsyed2021@u.northwestern.edu"
+home-page = "https://github.com/s-sajid-ali/multislice"
+
+requires = [
+	"numpy",
+	"numexpr",
+	"numexpr",
+	"pyfftw",
+	"scikit-image",
+	"pyfftw",
+	"dask"
+	"tqdm",
+        "matplotlib"
+	]
+
+requires-python=">=3.5"
